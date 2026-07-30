@@ -3,22 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Create Bill — Billing Software</title>
+
   <link rel="stylesheet" href="/style.css" />
+
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    /* Page-specific bits that don't belong in the shared stylesheet */
-    .product-table td, .product-table th { vertical-align: top; }
+    .product-table td,
+    .product-table th {
+      vertical-align: middle;
+    }
+
     .product-table input[type="text"],
     .product-table input[type="number"] {
       width: 100%;
-      padding: 7px 8px;
+      padding: 8px 9px;
       border: 1px solid var(--color-border);
       border-radius: 6px;
       font-size: 13px;
+      box-sizing: border-box;
     }
-    .qty-input, .price-input, .discount-input, .gst-input { width: 90px; }
-    .autocomplete-wrap { position: relative; }
+
+    .product-table input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    .autocomplete-wrap {
+      position: relative;
+    }
+
     .autocomplete-list {
       position: absolute;
       top: 100%;
@@ -28,19 +46,34 @@
       border: 1px solid var(--color-border);
       border-radius: 6px;
       box-shadow: var(--shadow-md);
-      z-index: 20;
+      z-index: 100;
       max-height: 180px;
       overflow-y: auto;
       display: none;
     }
+
     .autocomplete-list div {
-      padding: 8px 10px;
+      padding: 9px 10px;
       font-size: 13px;
       cursor: pointer;
     }
-    .autocomplete-list div:hover { background: #F1F4F7; }
-    .totals-box { max-width: 320px; margin-left: auto; }
-    .totals-box .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+
+    .autocomplete-list div:hover {
+      background: #f1f4f7;
+    }
+
+    .totals-box {
+      max-width: 320px;
+      margin-left: auto;
+    }
+
+    .totals-box .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
     .totals-box .row.grand {
       border-top: 2px solid var(--color-border);
       margin-top: 6px;
@@ -49,192 +82,399 @@
       font-size: 17px;
       font-family: var(--font-ledger);
     }
-    .customer-status { font-size: 13px; margin-top: 4px; }
-    #save-success-panel { display: none; }
+
+    .customer-status {
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    #save-success-panel {
+      display: none;
+    }
+
+    .empty-products {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .remove-row-btn {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .product-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .product-table th,
+      .product-table td {
+        min-width: 100px;
+      }
+
+      .product-table th:first-child,
+      .product-table td:first-child {
+        min-width: 220px;
+      }
+    }
   </style>
 </head>
+
 <body data-page="create-bill">
+
   <div class="app-shell">
+
+    <!-- Sidebar -->
     <div id="sidebar-root"></div>
 
     <main class="main">
+
+      <!-- ====================================================
+           TOP BAR
+      ===================================================== -->
+
       <div class="topbar">
+
         <div>
           <h1>Create Bill</h1>
-          <p id="bill-preview-line">Bill No: will be generated on save · Date/Time: auto</p>
+
+          <p id="bill-preview-line">
+            Bill No: will be generated on save · Date/Time: automatic
+          </p>
         </div>
+
       </div>
 
-      <!-- ============ Customer ============ -->
+
+      <!-- ====================================================
+           CUSTOMER
+      ===================================================== -->
+
       <div class="card mb-16">
+
         <h3>Customer</h3>
+
         <div class="form-row mt-16">
+
+          <!-- Mobile -->
           <div class="field" id="mobile-field">
-            <label for="mobile-input">Mobile Number</label>
-            <input type="text" id="mobile-input" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" />
-            <div class="error-text">Enter a valid 10-digit mobile number.</div>
-            <div class="customer-status text-muted" id="customer-status"></div>
+
+            <label for="mobile-input">
+              Mobile Number
+            </label>
+
+            <input
+              type="text"
+              id="mobile-input"
+              inputmode="numeric"
+              maxlength="10"
+              placeholder="10-digit mobile number"
+            />
+
+            <div class="error-text">
+              Enter a valid 10-digit mobile number.
+            </div>
+
+            <div
+              class="customer-status text-muted"
+              id="customer-status"
+            ></div>
+
           </div>
+
+
+          <!-- Customer Name -->
           <div class="field" id="name-field">
-            <label for="name-input">Customer Name</label>
-            <input type="text" id="name-input" placeholder="Customer name" />
-            <div class="error-text">Customer name is required.</div>
+
+            <label for="name-input">
+              Customer Name
+            </label>
+
+            <input
+              type="text"
+              id="name-input"
+              placeholder="Customer name"
+            />
+
+            <div class="error-text">
+              Customer name is required.
+            </div>
+
           </div>
+
         </div>
+
       </div>
 
-      <!-- ============ Products ============ -->
-<div class="card mb-16">
-  <div class="flex-between">
-    <h3>Products</h3>
-    <button class="btn btn-secondary btn-sm" id="add-row-btn">
-      + Add Product
-    </button>
-  </div>
 
-  <table class="product-table mt-16">
-    <thead>
-      <tr>
-        <th style="width:32%">Product</th>
-        <th>Qty</th>
-        <th>Rate (₹)</th>
-        <th>Discount (₹)</th>
-        <th>GST (%)</th>
-        <th class="money">Total</th>
-        <th></th>
-      </tr>
-    </thead>
+      <!-- ====================================================
+           PRODUCTS
+      ===================================================== -->
 
-    <tbody id="product-rows">
+      <div class="card mb-16">
 
-      <!-- Product Row -->
-      <tr class="product-row">
+        <div class="flex-between">
 
-        <!-- Product Name -->
-        <td>
-          <input
-            type="text"
-            class="product-name"
-            placeholder="Enter product name"
-          >
-        </td>
+          <h3>Products</h3>
 
-        <!-- Quantity -->
-        <td>
-          <input
-            type="number"
-            class="product-qty"
-            value="1"
-            min="1"
-            step="1"
-            placeholder="Qty"
-          >
-        </td>
-
-        <!-- Rate -->
-        <td>
-          <input
-            type="number"
-            class="product-rate"
-            value="0"
-            min="0"
-            step="0.01"
-            placeholder="Rate"
-          >
-        </td>
-
-        <!-- Discount -->
-        <td>
-          <input
-            type="number"
-            class="product-discount"
-            value="0"
-            min="0"
-            step="0.01"
-            placeholder="Discount"
-          >
-        </td>
-
-        <!-- GST -->
-        <td>
-          <input
-            type="number"
-            class="product-gst"
-            value="0"
-            min="0"
-            step="0.01"
-            placeholder="GST %"
-          >
-        </td>
-
-        <!-- Total -->
-        <td class="money">
-          <span class="product-total">₹0.00</span>
-        </td>
-
-        <!-- Remove -->
-        <td>
           <button
             type="button"
-            class="remove-product-btn"
-            title="Remove product"
+            class="btn btn-secondary btn-sm"
+            id="add-row-btn"
           >
-            ✕
+            + Add Product
           </button>
-        </td>
 
-      </tr>
-
-    </tbody>
-  </table>
-
-  <div id="no-products-msg" class="text-muted mt-16">
-    Enter your product details above or click "Add Product" to add another product.
-  </div>
-</div>
-      <!-- ============ Totals ============ -->
-      <div class="card mb-16">
-        <div class="totals-box">
-          <div class="row"><span class="text-muted">Subtotal</span><span class="money" id="total-subtotal">₹0.00</span></div>
-          <div class="row"><span class="text-muted">Discount</span><span class="money" id="total-discount">₹0.00</span></div>
-          <div class="row"><span class="text-muted">GST</span><span class="money" id="total-gst">₹0.00</span></div>
-          <div class="row grand"><span>Grand Total</span><span class="money" id="total-grand">₹0.00</span></div>
         </div>
+
+
+        <div style="overflow-x:auto;">
+
+          <table class="product-table mt-16">
+
+            <thead>
+
+              <tr>
+
+                <th style="width:32%">
+                  Product
+                </th>
+
+                <th>
+                  Qty
+                </th>
+
+                <th>
+                  Rate (₹)
+                </th>
+
+                <th>
+                  Discount (₹)
+                </th>
+
+                <th>
+                  GST (%)
+                </th>
+
+                <th class="money">
+                  Total
+                </th>
+
+                <th>
+                  Action
+                </th>
+
+              </tr>
+
+            </thead>
+
+
+            <!-- IMPORTANT:
+                 JS creates product rows here.
+            -->
+
+            <tbody id="product-rows"></tbody>
+
+          </table>
+
+        </div>
+
+
+        <div
+          id="no-products-msg"
+          class="text-muted mt-16 empty-products"
+        >
+          No products added yet.
+          Click "+ Add Product" to start.
+        </div>
+
       </div>
 
-      <!-- ============ Payment + Save ============ -->
-      <div class="card">
-        <div class="form-row">
-          <div class="field" style="max-width: 260px;">
-            <label for="payment-method">Payment Method</label>
-            <select id="payment-method">
-              <option value="Cash">Cash</option>
-              <option value="UPI">UPI</option>
-              <option value="Card">Card</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Other">Other</option>
-            </select>
+
+      <!-- ====================================================
+           TOTALS
+      ===================================================== -->
+
+      <div class="card mb-16">
+
+        <div class="totals-box">
+
+          <div class="row">
+
+            <span class="text-muted">
+              Subtotal
+            </span>
+
+            <span
+              class="money"
+              id="total-subtotal"
+            >
+              ₹0.00
+            </span>
+
           </div>
+
+
+          <div class="row">
+
+            <span class="text-muted">
+              Discount
+            </span>
+
+            <span
+              class="money"
+              id="total-discount"
+            >
+              ₹0.00
+            </span>
+
+          </div>
+
+
+          <div class="row">
+
+            <span class="text-muted">
+              GST
+            </span>
+
+            <span
+              class="money"
+              id="total-gst"
+            >
+              ₹0.00
+            </span>
+
+          </div>
+
+
+          <div class="row grand">
+
+            <span>
+              Grand Total
+            </span>
+
+            <span
+              class="money"
+              id="total-grand"
+            >
+              ₹0.00
+            </span>
+
+          </div>
+
         </div>
 
-        <button class="btn btn-primary" id="save-bill-btn" style="font-size:15px; padding:12px 28px;">
+      </div>
+
+
+      <!-- ====================================================
+           PAYMENT + SAVE
+      ===================================================== -->
+
+      <div class="card">
+
+        <div class="form-row">
+
+          <div
+            class="field"
+            style="max-width:260px;"
+          >
+
+            <label for="payment-method">
+              Payment Method
+            </label>
+
+            <select id="payment-method">
+
+              <option value="Cash">
+                Cash
+              </option>
+
+              <option value="UPI">
+                UPI
+              </option>
+
+              <option value="Card">
+                Card
+              </option>
+
+              <option value="Bank Transfer">
+                Bank Transfer
+              </option>
+
+              <option value="Other">
+                Other
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- SAVE -->
+        <button
+          type="button"
+          class="btn btn-primary"
+          id="save-bill-btn"
+          style="font-size:15px; padding:12px 28px;"
+        >
           SAVE BILL
         </button>
 
-        <div id="save-success-panel" class="mt-16">
-          <div class="badge badge-success mb-16">Bill saved successfully</div>
-          <p id="saved-bill-line" class="text-muted"></p>
-          <div class="flex gap-8">
-            <a class="btn btn-secondary" id="print-bill-link" target="_blank">Print This Bill</a>
-            <button class="btn btn-secondary" id="new-bill-btn">Create Another Bill</button>
+
+        <!-- SUCCESS -->
+        <div
+          id="save-success-panel"
+          class="mt-16"
+        >
+
+          <div class="badge badge-success mb-16">
+            Bill saved successfully
           </div>
+
+          <p
+            id="saved-bill-line"
+            class="text-muted"
+          ></p>
+
+          <div class="flex gap-8">
+
+            <a
+              class="btn btn-secondary"
+              id="print-bill-link"
+              target="_blank"
+            >
+              Print This Bill
+            </a>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="new-bill-btn"
+            >
+              Create Another Bill
+            </button>
+
+          </div>
+
         </div>
+
       </div>
+
     </main>
+
   </div>
+
+
+  <!-- ======================================================
+       JAVASCRIPT
+  ======================================================= -->
 
   <script src="/config.js"></script>
   <script src="/app.js"></script>
   <script src="/create-bill.js"></script>
+
 </body>
 </html>
