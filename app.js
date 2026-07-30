@@ -20,10 +20,10 @@ function renderSidebar() {
     { key: "dashboard", label: "Dashboard", href: "/pages/dashboard.html" },
     { key: "create-bill", label: "Create Bill", href: "/pages/create-bill.html" },
     { key: "bill-history", label: "Bill History", href: "/pages/bill-history.html" },
-    { key: "products", label: "Products", href: "#" },
-    { key: "customers", label: "Customers", href: "#" },
-    { key: "reports", label: "Reports", href: "#" },
-    { key: "settings", label: "Settings", href: "#" },
+    { key: "products", label: "Products", href: "/pages/products.html" },
+    { key: "customers", label: "Customers", href: "/pages/customers.html" },
+    { key: "reports", label: "Reports", href: "/pages/reports.html" },
+    { key: "settings", label: "Settings", href: "/pages/settings.html" },
   ];
 
   const linksHtml = links
