@@ -23,8 +23,8 @@
        - "anon public" key   → SUPABASE_ANON_KEY
    ============================================================ */
 
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL_HERE";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE";
+const SUPABASE_URL = "https://ultfexiksmhzuxrcfmzr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_ZNThyHvg2OHcibDSR7_Y4w_QZIgSMEG";
 
 // Single shared Supabase client used by every page.
 // Loaded via the Supabase CDN script (see index.html / pages/*.html).
