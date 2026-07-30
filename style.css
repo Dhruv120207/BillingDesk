@@ -373,3 +373,6 @@ th.money { text-align: right; }
   body { background: #fff; }
   .card { border: none; box-shadow: none; }
 }
+
+.modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; }
+.modal-backdrop.open { display: flex; }   /* ← the class that gets added */
