@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Billing Software</title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body data-page="settings">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Settings</h1>
+          <p>This information appears on every printed invoice.</p>
+        </div>
+      </div>
+
+      <div class="card" style="max-width: 520px;">
+        <h3 class="mb-16">Business Profile</h3>
+
+        <div class="field">
+          <label for="business-name-field">Business Name</label>
+          <input type="text" id="business-name-field" placeholder="e.g. Rahul Textiles" />
+        </div>
+
+        <div class="field">
+          <label for="address-field">Address</label>
+          <input type="text" id="address-field" placeholder="Shop no., street, city, PIN code" />
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label for="phone-field">Phone Number</label>
+            <input type="text" id="phone-field" placeholder="e.g. 9876543210" />
+          </div>
+          <div class="field">
+            <label for="gstin-field">GSTIN (optional)</label>
+            <input type="text" id="gstin-field" placeholder="e.g. 24AAAAA0000A1Z5" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="/config.js"></script>
+  <script src="/app.js"></script>
+  <script src="/settings.js"></script>
+</body>
+</html>
