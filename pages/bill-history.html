@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bill History — Billing Software</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body data-page="bill-history">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Bill History</h1>
+          <p>Search, filter by date, and print reports.</p>
+        </div>
+      </div>
+
+      <!-- ============ Filters ============ -->
+      <div class="card mb-16">
+        <div class="form-row">
+          <div class="field">
+            <label for="search-input">Search</label>
+            <input type="text" id="search-input" placeholder="Bill no, customer name, or mobile number" />
+          </div>
+          <div class="field">
+            <label for="from-date">From Date</label>
+            <input type="date" id="from-date" />
+          </div>
+          <div class="field">
+            <label for="to-date">To Date</label>
+            <input type="date" id="to-date" />
+          </div>
+        </div>
+        <div class="flex gap-8">
+          <button class="btn btn-primary" id="search-btn">Search</button>
+          <button class="btn btn-secondary" id="reset-btn">Reset</button>
+        </div>
+      </div>
+
+      <!-- ============ Sales Report Summary ============ -->
+      <div class="stat-grid" id="report-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Bills</div>
+          <div class="stat-value" id="report-count">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Sales</div>
+          <div class="stat-value" id="report-sales">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Discount</div>
+          <div class="stat-value" id="report-discount">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total GST</div>
+          <div class="stat-value" id="report-gst">—</div>
+        </div>
+      </div>
+
+      <!-- ============ Bills Table ============ -->
+      <div class="card">
+        <div class="flex-between mb-16">
+          <h3>Bills</h3>
+          <button class="btn btn-secondary btn-sm" id="print-report-btn">Print Report</button>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Bill No.</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Customer</th>
+              <th>Mobile</th>
+              <th class="money">Total</th>
+              <th>Payment</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="bills-tbody"></tbody>
+        </table>
+        <div id="no-bills-msg" class="text-muted mt-16" style="display:none;">No bills found for this filter.</div>
+        <div id="loading-msg" class="text-muted mt-16">Loading bills...</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../config.js"></script>
+  <script src="../app.js"></script>
+  <script src="bill-history.js"></script>
+</body>
+</html>
