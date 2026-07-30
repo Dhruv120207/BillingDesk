@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customers — Billing Software</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 31, 51, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 420px;
+      max-width: 90vw;
+      box-shadow: var(--shadow-md);
+    }
+    .modal-box h2 { margin-bottom: 16px; }
+  </style>
+</head>
+<body data-page="customers">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Customers</h1>
+          <p>Everyone who's been billed, in one place.</p>
+        </div>
+      </div>
+
+      <div class="card mb-16">
+        <div class="field" style="max-width:340px;">
+          <label for="customer-search">Search</label>
+          <input type="text" id="customer-search" placeholder="Name or mobile number" />
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer Name</th>
+              <th>Mobile</th>
+              <th>Customer Since</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="customers-tbody"></tbody>
+        </table>
+        <div id="no-customers-msg" class="text-muted mt-16" style="display:none;">No customers found.</div>
+        <div id="loading-msg" class="text-muted mt-16">Loading customers...</div>
+      </div>
+      <p class="text-muted mt-16" style="font-size:13px;">
+        New customers are created automatically the first time you bill them on the Create Bill page — you don't need to add them here first.
+      </p>
+    </main>
+  </div>
+
+  <!-- Edit modal -->
+  <div class="modal-backdrop" id="customer-modal">
+    <div class="modal-box">
+      <h2>Edit Customer</h2>
+      <input type="hidden" id="customer-id-field" />
+      <div class="field" id="name-field">
+        <label for="customer-name-field">Customer Name</label>
+        <input type="text" id="customer-name-field" />
+        <div class="error-text">Customer name is required.</div>
+      </div>
+      <div class="field" id="mobile-field">
+        <label for="customer-mobile-field">Mobile Number</label>
+        <input type="text" id="customer-mobile-field" inputmode="numeric" maxlength="10" />
+        <div class="error-text">Enter a valid 10-digit mobile number.</div>
+      </div>
+      <div class="flex gap-8 mt-16">
+        <button class="btn btn-primary" id="save-customer-btn">Save</button>
+        <button class="btn btn-secondary" id="cancel-modal-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../config.js"></script>
+  <script src="../app.js"></script>
+  <script src="customers.js"></script>
+</body>
+</html>
