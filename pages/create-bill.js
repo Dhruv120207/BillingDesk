@@ -1,153 +1,52 @@
 /* ============================================================
-   CREATE-BILL.JS
-   Billing Software
-   ============================================================ */
-
-
-/* ============================================================
-   GLOBAL VARIABLES
+   CREATE BILL
    ============================================================ */
 
 let rowCounter = 0;
-
 let isSaving = false;
 
-const productRowsBody =
-  document.getElementById("product-rows");
 
-const addRowBtn =
-  document.getElementById("add-row-btn");
+/* ============================================================
+   GET ELEMENTS
+   ============================================================ */
 
-const saveBillBtn =
-  document.getElementById("save-bill-btn");
+const productRowsBody = document.getElementById("product-rows");
+const addRowBtn = document.getElementById("add-row-btn");
 
-const mobileInput =
-  document.getElementById("mobile-input");
+const mobileInput = document.getElementById("mobile-input");
+const nameInputTop = document.getElementById("name-input");
+const customerStatus = document.getElementById("customer-status");
 
-const nameInputTop =
-  document.getElementById("name-input");
-
-const customerStatus =
-  document.getElementById("customer-status");
+const saveBillBtn = document.getElementById("save-bill-btn");
 
 
 /* ============================================================
-   MONEY FORMAT
+   MONEY
    ============================================================ */
 
-function formatMoney(value) {
-
-  const number =
-    Number(value || 0);
-
-  return (
-    "₹" +
-    number.toLocaleString("en-IN", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
-  );
+function formatCurrency(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 
 /* ============================================================
-   FORMAT DATE
-   ============================================================ */
-
-function formatDateDDMMYYYY(dateString) {
-
-  if (!dateString) {
-    return "";
-  }
-
-  const parts =
-    dateString.split("-");
-
-  if (parts.length !== 3) {
-    return dateString;
-  }
-
-  return (
-    parts[2] +
-    "/" +
-    parts[1] +
-    "/" +
-    parts[0]
-  );
-}
-
-
-/* ============================================================
-   FORMAT TIME
-   ============================================================ */
-
-function formatTime12h(timeString) {
-
-  if (!timeString) {
-    return "";
-  }
-
-  const parts =
-    timeString.split(":");
-
-  if (parts.length < 2) {
-    return timeString;
-  }
-
-  let hour =
-    parseInt(parts[0], 10);
-
-  const minute =
-    parts[1];
-
-  const second =
-    parts[2]
-      ? parts[2].split(".")[0]
-      : "00";
-
-  const period =
-    hour >= 12
-      ? "PM"
-      : "AM";
-
-  hour =
-    hour % 12 || 12;
-
-  return (
-    String(hour).padStart(2, "0") +
-    ":" +
-    minute +
-    ":" +
-    second +
-    " " +
-    period
-  );
-}
-
-
-/* ============================================================
-   PRODUCT ROW
+   ADD PRODUCT ROW
    ============================================================ */
 
 function addProductRow() {
 
-  rowCounter += 1;
+  rowCounter++;
 
-  const rowId =
-    `row-${rowCounter}`;
+  const tr = document.createElement("tr");
 
-
-  const tr =
-    document.createElement("tr");
-
-  tr.id = rowId;
-
+  tr.id = `product-row-${rowCounter}`;
 
   tr.innerHTML = `
-
-    <!-- PRODUCT -->
+    
     <td>
-
       <div class="autocomplete-wrap">
 
         <input
@@ -155,97 +54,76 @@ function addProductRow() {
           class="product-name-input"
           placeholder="Enter product name"
           autocomplete="off"
-        />
+        >
 
         <input
           type="hidden"
           class="product-id-input"
           value=""
-        />
+        >
 
         <div class="autocomplete-list"></div>
 
       </div>
-
     </td>
 
 
-    <!-- QUANTITY -->
     <td>
-
       <input
         type="number"
         class="qty-input"
+        value="1"
         min="0.01"
         step="0.01"
-        value="1"
-        placeholder="Qty"
-      />
-
+      >
     </td>
 
 
-    <!-- RATE -->
     <td>
-
       <input
         type="number"
         class="price-input"
+        value="0"
         min="0"
         step="0.01"
-        value="0"
-        placeholder="Rate"
-      />
-
+      >
     </td>
 
 
-    <!-- DISCOUNT -->
     <td>
-
       <input
         type="number"
         class="discount-input"
+        value="0"
         min="0"
         step="0.01"
-        value="0"
-        placeholder="Discount"
-      />
-
+      >
     </td>
 
 
-    <!-- GST -->
     <td>
-
       <input
         type="number"
         class="gst-input"
+        value="0"
         min="0"
         step="0.01"
-        value="0"
-        placeholder="GST %"
-      />
-
+      >
     </td>
 
 
-    <!-- TOTAL -->
     <td class="money line-total">
       ₹0.00
     </td>
 
 
-    <!-- REMOVE -->
     <td>
-
       <button
         type="button"
         class="btn btn-danger btn-sm remove-row-btn"
       >
         Remove
       </button>
-
     </td>
 
   `;
@@ -255,8 +133,8 @@ function addProductRow() {
 
 
   /* ==========================================================
-     ELEMENTS
-  ========================================================== */
+     GET INPUTS
+     ========================================================== */
 
   const qtyInput =
     tr.querySelector(".qty-input");
@@ -270,7 +148,7 @@ function addProductRow() {
   const gstInput =
     tr.querySelector(".gst-input");
 
-  const nameInput =
+  const productNameInput =
     tr.querySelector(".product-name-input");
 
   const productIdInput =
@@ -285,35 +163,36 @@ function addProductRow() {
 
   /* ==========================================================
      AUTOMATIC CALCULATION
-  ========================================================== */
+     ========================================================== */
 
-  [
-    qtyInput,
-    priceInput,
-    discountInput,
-    gstInput
-  ].forEach(input => {
+  qtyInput.addEventListener(
+    "input",
+    recalculateAll
+  );
 
-    input.addEventListener(
-      "input",
-      recalculateAll
-    );
+  priceInput.addEventListener(
+    "input",
+    recalculateAll
+  );
 
-    input.addEventListener(
-      "change",
-      recalculateAll
-    );
+  discountInput.addEventListener(
+    "input",
+    recalculateAll
+  );
 
-  });
+  gstInput.addEventListener(
+    "input",
+    recalculateAll
+  );
 
 
   /* ==========================================================
-     REMOVE PRODUCT
-  ========================================================== */
+     REMOVE
+     ========================================================== */
 
   removeBtn.addEventListener(
     "click",
-    () => {
+    function () {
 
       tr.remove();
 
@@ -327,34 +206,21 @@ function addProductRow() {
 
   /* ==========================================================
      PRODUCT SEARCH
-  ========================================================== */
+     ========================================================== */
 
-  let debounceTimer;
+  let timer;
 
-
-  nameInput.addEventListener(
+  productNameInput.addEventListener(
     "input",
-    () => {
-
-      /*
-       * If user starts typing manually,
-       * remove previously selected product ID.
-       */
+    function () {
 
       productIdInput.value = "";
 
-
-      clearTimeout(debounceTimer);
-
+      clearTimeout(timer);
 
       const query =
-        nameInput.value.trim();
+        productNameInput.value.trim();
 
-
-      /*
-       * Allow manual product entry.
-       * Search starts after 2 characters.
-       */
 
       if (query.length < 2) {
 
@@ -362,242 +228,191 @@ function addProductRow() {
           "none";
 
         return;
+
       }
 
 
-      debounceTimer =
-        setTimeout(
-          async () => {
+      timer = setTimeout(
+        async function () {
 
-            try {
+          /*
+           * If Supabase is not initialized,
+           * manual product entry still works.
+           */
 
-              const {
-                data,
-                error
-              } = await supabaseClient
+          if (
+            typeof supabaseClient ===
+            "undefined"
+          ) {
 
-                .from("products")
+            suggestionBox.style.display =
+              "none";
 
-                .select(
-                  "id, product_name, price"
-                )
+            return;
 
-                .ilike(
-                  "product_name",
-                  `%${query}%`
-                )
-
-                .limit(6);
+          }
 
 
-              if (error) {
-                throw error;
-              }
+          try {
+
+            const {
+              data,
+              error
+            } = await supabaseClient
+
+              .from("products")
+
+              .select(
+                "id, product_name, price"
+              )
+
+              .ilike(
+                "product_name",
+                `%${query}%`
+              )
+
+              .limit(6);
 
 
-              if (
-                !data ||
-                data.length === 0
-              ) {
-
-                suggestionBox.style.display =
-                  "none";
-
-                return;
-              }
+            if (error) {
+              throw error;
+            }
 
 
-              suggestionBox.innerHTML =
-                data
-                  .map(product => {
-
-                    return `
-
-                      <div
-                        data-id="${product.id}"
-                        data-name="${escapeHtml(product.product_name)}"
-                        data-price="${product.price}"
-                      >
-
-                        ${escapeHtml(product.product_name)}
-                        —
-                        ${formatMoney(product.price)}
-
-                      </div>
-
-                    `;
-
-                  })
-                  .join("");
-
-
-              suggestionBox.style.display =
-                "block";
-
-
-              /* ==================================================
-                 SELECT PRODUCT FROM SEARCH
-              ================================================== */
-
-              suggestionBox
-                .querySelectorAll("div")
-                .forEach(item => {
-
-                  item.addEventListener(
-                    "click",
-                    () => {
-
-                      nameInput.value =
-                        item.dataset.name;
-
-                      priceInput.value =
-                        item.dataset.price;
-
-                      productIdInput.value =
-                        item.dataset.id;
-
-                      suggestionBox.style.display =
-                        "none";
-
-                      recalculateAll();
-
-                    }
-                  );
-
-                });
-
-
-            } catch (error) {
-
-              console.error(
-                "Product search error:",
-                error
-              );
-
-              /*
-               * Manual entry still works
-               * if Supabase search fails.
-               */
+            if (
+              !data ||
+              data.length === 0
+            ) {
 
               suggestionBox.style.display =
                 "none";
 
+              return;
+
             }
 
-          },
-          300
-        );
+
+            suggestionBox.innerHTML = "";
+
+
+            data.forEach(
+              function (product) {
+
+                const item =
+                  document.createElement("div");
+
+                item.textContent =
+                  `${product.product_name} — ${formatCurrency(product.price)}`;
+
+                item.dataset.id =
+                  product.id;
+
+                item.dataset.name =
+                  product.product_name;
+
+                item.dataset.price =
+                  product.price;
+
+
+                item.addEventListener(
+                  "click",
+                  function () {
+
+                    productNameInput.value =
+                      product.product_name;
+
+                    productIdInput.value =
+                      product.id;
+
+                    priceInput.value =
+                      product.price;
+
+                    suggestionBox.style.display =
+                      "none";
+
+                    recalculateAll();
+
+                  }
+                );
+
+
+                suggestionBox.appendChild(item);
+
+              }
+            );
+
+
+            suggestionBox.style.display =
+              "block";
+
+
+          } catch (error) {
+
+            console.error(
+              "Product search error:",
+              error
+            );
+
+            suggestionBox.style.display =
+              "none";
+
+          }
+
+        },
+        300
+      );
 
     }
   );
 
 
   /* ==========================================================
-     CLOSE AUTOCOMPLETE
-  ========================================================== */
-
-  document.addEventListener(
-    "click",
-    event => {
-
-      if (!tr.contains(event.target)) {
-
-        suggestionBox.style.display =
-          "none";
-
-      }
-
-    }
-  );
-
-
-  /* ==========================================================
-     UPDATE
-  ========================================================== */
-
-  toggleEmptyMessage();
+     INITIAL CALCULATION
+     ========================================================== */
 
   recalculateAll();
 
-
-  /*
-   * Return row so we can focus the product name.
-   */
 
   return tr;
 }
 
 
 /* ============================================================
-   HTML ESCAPE
-   ============================================================ */
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-/* ============================================================
-   EMPTY PRODUCT MESSAGE
+   EMPTY MESSAGE
    ============================================================ */
 
 function toggleEmptyMessage() {
 
-  const msg =
+  const message =
     document.getElementById(
       "no-products-msg"
     );
 
 
-  if (!msg) {
+  if (!message) {
     return;
   }
 
 
-  const count =
-    productRowsBody.children.length;
+  if (
+    productRowsBody.children.length === 0
+  ) {
 
-
-  if (count === 0) {
-
-    msg.style.display =
+    message.style.display =
       "block";
 
   } else {
 
-    msg.style.display =
+    message.style.display =
       "none";
 
   }
+
 }
 
 
 /* ============================================================
-   CALCULATE ALL TOTALS
-   ============================================================
-
-   Formula:
-
-   lineBase =
-      quantity × price
-
-   lineDiscount =
-      discount
-
-   taxableAmount =
-      lineBase - discount
-
-   GST =
-      taxableAmount × GST% / 100
-
-   lineTotal =
-      taxableAmount + GST
+   CALCULATE TOTALS
    ============================================================ */
 
 function recalculateAll() {
@@ -606,7 +421,7 @@ function recalculateAll() {
 
   let totalDiscount = 0;
 
-  let totalGst = 0;
+  let totalGST = 0;
 
 
   const rows =
@@ -615,161 +430,163 @@ function recalculateAll() {
     );
 
 
-  rows.forEach(tr => {
+  rows.forEach(
+    function (row) {
 
-    const qty =
-      parseFloat(
-        tr.querySelector(
-          ".qty-input"
-        ).value
-      ) || 0;
-
-
-    const price =
-      parseFloat(
-        tr.querySelector(
-          ".price-input"
-        ).value
-      ) || 0;
+      const qty =
+        parseFloat(
+          row.querySelector(
+            ".qty-input"
+          ).value
+        ) || 0;
 
 
-    const discount =
-      parseFloat(
-        tr.querySelector(
-          ".discount-input"
-        ).value
-      ) || 0;
+      const rate =
+        parseFloat(
+          row.querySelector(
+            ".price-input"
+          ).value
+        ) || 0;
 
 
-    const gstPercent =
-      parseFloat(
-        tr.querySelector(
-          ".gst-input"
-        ).value
-      ) || 0;
+      const discount =
+        parseFloat(
+          row.querySelector(
+            ".discount-input"
+          ).value
+        ) || 0;
 
 
-    /*
-     * Base amount
-     */
-
-    const lineBase =
-      qty * price;
-
-
-    /*
-     * Discount cannot be
-     * greater than line value.
-     */
-
-    const safeDiscount =
-      Math.min(
-        Math.max(discount, 0),
-        lineBase
-      );
+      const gstPercent =
+        parseFloat(
+          row.querySelector(
+            ".gst-input"
+          ).value
+        ) || 0;
 
 
-    /*
-     * Amount after discount
-     */
+      /* Quantity × Rate */
 
-    const taxableAmount =
-      lineBase -
-      safeDiscount;
+      const baseAmount =
+        qty * rate;
 
 
-    /*
-     * GST
-     */
+      /* Discount */
 
-    const lineGst =
-      taxableAmount *
-      (gstPercent / 100);
-
-
-    /*
-     * Final product total
-     */
-
-    const lineTotal =
-      taxableAmount +
-      lineGst;
+      const safeDiscount =
+        Math.min(
+          Math.max(discount, 0),
+          baseAmount
+        );
 
 
-    /*
-     * Show product total
-     */
+      /* Amount after discount */
 
-    const lineTotalElement =
-      tr.querySelector(
+      const taxableAmount =
+        baseAmount -
+        safeDiscount;
+
+
+      /* GST */
+
+      const gstAmount =
+        taxableAmount *
+        gstPercent /
+        100;
+
+
+      /* Final product total */
+
+      const lineTotal =
+        taxableAmount +
+        gstAmount;
+
+
+      /* Display product total */
+
+      row.querySelector(
         ".line-total"
-      );
+      ).textContent =
+        formatCurrency(lineTotal);
 
 
-    lineTotalElement.textContent =
-      formatMoney(lineTotal);
+      /* Add to bill totals */
 
+      subtotal += baseAmount;
 
-    /*
-     * Add to bill totals
-     */
+      totalDiscount += safeDiscount;
 
-    subtotal += lineBase;
+      totalGST += gstAmount;
 
-    totalDiscount += safeDiscount;
+    }
+  );
 
-    totalGst += lineGst;
-
-  });
-
-
-  /*
-   * Grand total
-   */
 
   const grandTotal =
     subtotal -
     totalDiscount +
-    totalGst;
+    totalGST;
 
-
-  /*
-   * Display totals
-   */
 
   document.getElementById(
     "total-subtotal"
   ).textContent =
-    formatMoney(subtotal);
+    formatCurrency(subtotal);
 
 
   document.getElementById(
     "total-discount"
   ).textContent =
-    formatMoney(totalDiscount);
+    formatCurrency(totalDiscount);
 
 
   document.getElementById(
     "total-gst"
   ).textContent =
-    formatMoney(totalGst);
+    formatCurrency(totalGST);
 
 
   document.getElementById(
     "total-grand"
   ).textContent =
-    formatMoney(grandTotal);
+    formatCurrency(grandTotal);
 
 }
 
 
 /* ============================================================
-   CUSTOMER MOBILE INPUT
+   ADD PRODUCT BUTTON
+   ============================================================ */
+
+addRowBtn.addEventListener(
+  "click",
+  function () {
+
+    const row =
+      addProductRow();
+
+
+    const input =
+      row.querySelector(
+        ".product-name-input"
+      );
+
+
+    if (input) {
+      input.focus();
+    }
+
+  }
+);
+
+
+/* ============================================================
+   CUSTOMER MOBILE
    ============================================================ */
 
 mobileInput.addEventListener(
   "input",
-  () => {
+  function () {
 
     mobileInput.value =
       mobileInput.value
@@ -781,22 +598,29 @@ mobileInput.addEventListener(
 
 
 /* ============================================================
-   CUSTOMER LOOKUP
+   CUSTOMER SEARCH
    ============================================================ */
 
 mobileInput.addEventListener(
   "blur",
-  async () => {
+  async function () {
 
     const mobile =
       mobileInput.value.trim();
 
 
-    customerStatus.textContent =
-      "";
+    customerStatus.textContent = "";
 
 
     if (mobile.length !== 10) {
+      return;
+    }
+
+
+    if (
+      typeof supabaseClient ===
+      "undefined"
+    ) {
       return;
     }
 
@@ -829,34 +653,16 @@ mobileInput.addEventListener(
 
       if (data) {
 
-        /*
-         * Existing customer
-         */
-
         nameInputTop.value =
           data.customer_name;
-
 
         customerStatus.textContent =
           "✓ Existing customer found";
 
-
-        customerStatus.style.color =
-          "var(--color-success)";
-
-
       } else {
 
-        /*
-         * New customer
-         */
-
         customerStatus.textContent =
-          "New customer — will be created on save";
-
-
-        customerStatus.style.color =
-          "var(--color-text-muted)";
+          "New customer";
 
       }
 
@@ -864,7 +670,7 @@ mobileInput.addEventListener(
     } catch (error) {
 
       console.error(
-        "Customer lookup error:",
+        "Customer search error:",
         error
       );
 
@@ -875,514 +681,60 @@ mobileInput.addEventListener(
 
 
 /* ============================================================
-   VALIDATION
+   START PAGE
    ============================================================ */
 
-function validateBill() {
+/*
+ * IMPORTANT:
+ * The script is loaded at the bottom of the HTML,
+ * so the elements already exist.
+ */
 
-  let valid = true;
+if (
+  productRowsBody &&
+  addRowBtn
+) {
+
+  /*
+   * Create first product row
+   */
+
+  const firstRow =
+    addProductRow();
 
 
-  const mobileField =
-    document.getElementById(
-      "mobile-field"
+  /*
+   * Hide empty message
+   */
+
+  toggleEmptyMessage();
+
+
+  /*
+   * Focus product name
+   */
+
+  const firstInput =
+    firstRow.querySelector(
+      ".product-name-input"
     );
 
 
-  const nameField =
-    document.getElementById(
-      "name-field"
-    );
+  if (firstInput) {
+    firstInput.focus();
+  }
 
 
-  mobileField.classList.remove(
-    "has-error"
+  /*
+   * Initial totals
+   */
+
+  recalculateAll();
+
+} else {
+
+  console.error(
+    "Billing page elements not found. Check create-bill.html IDs."
   );
 
-
-  nameField.classList.remove(
-    "has-error"
-  );
-
-
-  /*
-   * Mobile
-   */
-
-  if (
-    !/^[0-9]{10}$/.test(
-      mobileInput.value.trim()
-    )
-  ) {
-
-    mobileField.classList.add(
-      "has-error"
-    );
-
-    valid = false;
-
-  }
-
-
-  /*
-   * Customer name
-   */
-
-  if (
-    nameInputTop.value.trim().length === 0
-  ) {
-
-    nameField.classList.add(
-      "has-error"
-    );
-
-    valid = false;
-
-  }
-
-
-  /*
-   * Product rows
-   */
-
-  const rows =
-    productRowsBody.querySelectorAll(
-      "tr"
-    );
-
-
-  if (rows.length === 0) {
-
-    showToast(
-      "Add at least one product before saving.",
-      "error"
-    );
-
-    valid = false;
-
-  }
-
-
-  /*
-   * Validate every product
-   */
-
-  rows.forEach(tr => {
-
-    const qty =
-      parseFloat(
-        tr.querySelector(
-          ".qty-input"
-        ).value
-      );
-
-
-    const price =
-      parseFloat(
-        tr.querySelector(
-          ".price-input"
-        ).value
-      );
-
-
-    const name =
-      tr.querySelector(
-        ".product-name-input"
-      ).value.trim();
-
-
-    if (!name) {
-
-      showToast(
-        "Every product row needs a product name.",
-        "error"
-      );
-
-      valid = false;
-
-    }
-
-
-    if (!(qty > 0)) {
-
-      showToast(
-        "Quantity must be greater than 0 for every product.",
-        "error"
-      );
-
-      valid = false;
-
-    }
-
-
-    if (!(price >= 0)) {
-
-      showToast(
-        "Price cannot be negative.",
-        "error"
-      );
-
-      valid = false;
-
-    }
-
-  });
-
-
-  /*
-   * Customer error message
-   */
-
-  if (
-    !valid &&
-    (
-      mobileField.classList.contains(
-        "has-error"
-      ) ||
-      nameField.classList.contains(
-        "has-error"
-      )
-    )
-  ) {
-
-    showToast(
-      "Please fill in customer name and a valid 10-digit mobile number.",
-      "error"
-    );
-
-  }
-
-
-  return valid;
 }
-
-
-/* ============================================================
-   SAVE BILL
-   ============================================================ */
-
-saveBillBtn.addEventListener(
-  "click",
-  async () => {
-
-    /*
-     * Prevent double click
-     */
-
-    if (isSaving) {
-      return;
-    }
-
-
-    /*
-     * Validate
-     */
-
-    if (!validateBill()) {
-      return;
-    }
-
-
-    isSaving = true;
-
-
-    setButtonLoading(
-      saveBillBtn,
-      true,
-      "Saving..."
-    );
-
-
-    /*
-     * Collect product items
-     */
-
-    const items =
-      Array.from(
-        productRowsBody.querySelectorAll(
-          "tr"
-        )
-      ).map(tr => {
-
-        return {
-
-          product_id:
-            tr.querySelector(
-              ".product-id-input"
-            ).value || null,
-
-          product_name:
-            tr.querySelector(
-              ".product-name-input"
-            ).value.trim(),
-
-          quantity:
-            parseFloat(
-              tr.querySelector(
-                ".qty-input"
-              ).value
-            ),
-
-          price:
-            parseFloat(
-              tr.querySelector(
-                ".price-input"
-              ).value
-            ),
-
-          discount:
-            parseFloat(
-              tr.querySelector(
-                ".discount-input"
-              ).value
-            ) || 0,
-
-          gst_percent:
-            parseFloat(
-              tr.querySelector(
-                ".gst-input"
-              ).value
-            ) || 0
-
-        };
-
-      });
-
-
-    try {
-
-      /*
-       * Call Supabase RPC
-       */
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient.rpc(
-          "create_bill",
-          {
-
-            p_customer_name:
-              nameInputTop.value.trim(),
-
-            p_mobile_no:
-              mobileInput.value.trim(),
-
-            p_payment_method:
-              document.getElementById(
-                "payment-method"
-              ).value,
-
-            p_items:
-              items
-
-          }
-        );
-
-
-      if (error) {
-        throw error;
-      }
-
-
-      /*
-       * Check response
-       */
-
-      if (
-        !data ||
-        !data[0]
-      ) {
-
-        throw new Error(
-          "Bill was saved but no bill information was returned."
-        );
-
-      }
-
-
-      const savedBill =
-        data[0];
-
-
-      /*
-       * Success message
-       */
-
-      showToast(
-        `Bill ${savedBill.bill_no} saved successfully`,
-        "success"
-      );
-
-
-      /*
-       * Show bill information
-       */
-
-      document.getElementById(
-        "saved-bill-line"
-      ).textContent =
-
-        `${savedBill.bill_no} · ` +
-        `${formatDateDDMMYYYY(savedBill.bill_date)} · ` +
-        `${formatTime12h(savedBill.bill_time)}`;
-
-
-      /*
-       * Print link
-       */
-
-      document.getElementById(
-        "print-bill-link"
-      ).href =
-        `view-bill.html?id=${savedBill.bill_id}`;
-
-
-      /*
-       * Show success panel
-       */
-
-      document.getElementById(
-        "save-success-panel"
-      ).style.display =
-        "block";
-
-
-      /*
-       * Hide save button
-       */
-
-      saveBillBtn.style.display =
-        "none";
-
-
-    } catch (error) {
-
-      console.error(
-        "Save bill error:",
-        error
-      );
-
-
-      showToast(
-        friendlyErrorMessage(error),
-        "error"
-      );
-
-
-      /*
-       * Allow another attempt
-       */
-
-      isSaving = false;
-
-
-      setButtonLoading(
-        saveBillBtn,
-        false
-      );
-
-    }
-
-  }
-);
-
-
-/* ============================================================
-   CREATE ANOTHER BILL
-   ============================================================ */
-
-document
-  .getElementById("new-bill-btn")
-  .addEventListener(
-    "click",
-    () => {
-
-      window.location.reload();
-
-    }
-  );
-
-
-/* ============================================================
-   ADD PRODUCT BUTTON
-   ============================================================ */
-
-addRowBtn.addEventListener(
-  "click",
-  () => {
-
-    const newRow =
-      addProductRow();
-
-
-    /*
-     * Automatically focus
-     * product name
-     */
-
-    const nameInput =
-      newRow.querySelector(
-        ".product-name-input"
-      );
-
-
-    if (nameInput) {
-
-      nameInput.focus();
-
-    }
-
-  }
-);
-
-
-/* ============================================================
-   INITIALIZE PAGE
-   ============================================================ */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    /*
-     * Make sure table is empty
-     */
-
-    productRowsBody.innerHTML = "";
-
-
-    /*
-     * Create first product row
-     */
-
-    const firstRow =
-      addProductRow();
-
-
-    /*
-     * Focus product name
-     */
-
-    const firstNameInput =
-      firstRow.querySelector(
-        ".product-name-input"
-      );
-
-
-    if (firstNameInput) {
-
-      firstNameInput.focus();
-
-    }
-
-
-    /*
-     * Initial totals
-     */
-
-    recalculateAll();
-
-  }
-);
