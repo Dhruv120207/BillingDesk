@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Billing Software</title>
+  <link rel="stylesheet" href="../style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body data-page="dashboard">
+  <div class="app-shell">
+    <div id="sidebar-root"></div>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1>Dashboard</h1>
+          <p>A quick look at today and this month.</p>
+        </div>
+        <a href="create-bill.html" class="btn btn-primary">+ Create Bill</a>
+      </div>
+
+      <div class="stat-grid" id="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Today's Bills</div>
+          <div class="stat-value" id="stat-today-bills">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today's Sales</div>
+          <div class="stat-value" id="stat-today-sales">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Month's Bills</div>
+          <div class="stat-value" id="stat-month-bills">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">This Month's Sales</div>
+          <div class="stat-value" id="stat-month-sales">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Links</h3>
+        <div class="flex gap-8 mt-16">
+          <a href="create-bill.html" class="btn btn-secondary">Create Bill</a>
+          <a href="bill-history.html" class="btn btn-secondary">Bill History</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../config.js"></script>
+  <script src="../app.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

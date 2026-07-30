@@ -1,0 +1,375 @@
+/* ============================================================
+   STYLE.CSS — Billing Software
+   Design language: a quiet, professional ledger.
+   Money is always set in tabular monospace and right-aligned,
+   like a real accounting register — everything else is plain,
+   legible UI type so the numbers are what draws the eye.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  /* Color tokens */
+  --color-bg: #F4F6F8;
+  --color-surface: #FFFFFF;
+  --color-primary: #16324F;
+  --color-primary-dark: #0D1F33;
+  --color-accent: #0E7C7B;
+  --color-accent-hover: #0A5F5E;
+  --color-text: #1B2430;
+  --color-text-muted: #5B6B7C;
+  --color-border: #DCE3EA;
+  --color-danger: #C0392B;
+  --color-danger-bg: #FCEDEB;
+  --color-success: #1E8E3E;
+  --color-success-bg: #EAF6EC;
+  --color-warning: #C77700;
+  --color-warning-bg: #FDF3E3;
+
+  /* Type */
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-ledger: 'IBM Plex Mono', monospace;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgba(13, 31, 51, 0.06);
+  --shadow-md: 0 4px 12px rgba(13, 31, 51, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--color-primary-dark);
+  margin: 0 0 4px 0;
+}
+
+h1 { font-size: 22px; font-weight: 700; }
+h2 { font-size: 17px; font-weight: 600; }
+h3 { font-size: 14px; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+a { color: var(--color-accent); text-decoration: none; }
+
+/* ------------------------------------------------------------
+   App shell: sidebar + main content
+   ------------------------------------------------------------ */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-primary-dark);
+  color: #E8EEF3;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.sidebar-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+  padding: 0 20px 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 12px;
+}
+
+.sidebar-brand span { color: var(--color-accent); }
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  color: #C3D0DC;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+
+.nav-link.active {
+  background: rgba(14,124,123,0.18);
+  border-left-color: var(--color-accent);
+  color: #fff;
+}
+
+.main {
+  flex: 1;
+  padding: 28px 32px;
+  max-width: 1200px;
+}
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.topbar p {
+  margin: 2px 0 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------
+   Cards / stat tiles
+   ------------------------------------------------------------ */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.stat-card .stat-value {
+  font-family: var(--font-ledger);
+  font-weight: 600;
+  font-size: 24px;
+  color: var(--color-primary-dark);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-primary { background: var(--color-accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--color-accent-hover); }
+
+.btn-secondary { background: #fff; color: var(--color-primary); border-color: var(--color-border); }
+.btn-secondary:hover:not(:disabled) { background: #F1F4F7; }
+
+.btn-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+.btn-danger:hover:not(:disabled) { background: #F8DCD8; }
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+/* ------------------------------------------------------------
+   Forms
+   ------------------------------------------------------------ */
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  background: #fff;
+  color: var(--color-text);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  border-color: var(--color-accent);
+}
+
+.field .error-text {
+  color: var(--color-danger);
+  font-size: 12px;
+  margin-top: 4px;
+  display: none;
+}
+
+.field.has-error input { border-color: var(--color-danger); }
+.field.has-error .error-text { display: block; }
+
+.form-row { display: flex; gap: 16px; }
+.form-row .field { flex: 1; }
+
+/* ------------------------------------------------------------
+   Tables — the ledger look
+   ------------------------------------------------------------ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+tbody td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+tbody tr:hover { background: #F8FAFB; }
+
+/* Money columns: monospace, tabular, right-aligned — the ledger signature */
+.money {
+  font-family: var(--font-ledger);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+th.money { text-align: right; }
+
+/* ------------------------------------------------------------
+   Badges / status
+   ------------------------------------------------------------ */
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success { background: var(--color-success-bg); color: var(--color-success); }
+.badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+.badge-danger  { background: var(--color-danger-bg); color: var(--color-danger); }
+
+/* ------------------------------------------------------------
+   Toast notifications
+   ------------------------------------------------------------ */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 240px;
+  animation: toast-in 0.2s ease;
+}
+
+.toast-success { background: var(--color-success-bg); color: var(--color-success); border: 1px solid #C7E8CC; }
+.toast-error { background: var(--color-danger-bg); color: var(--color-danger); border: 1px solid #F3CBC5; }
+.toast-info { background: #E9F1F8; color: var(--color-primary); border: 1px solid #CBDCEA; }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------
+   Utility
+   ------------------------------------------------------------ */
+.text-muted { color: var(--color-text-muted); }
+.mt-16 { margin-top: 16px; }
+.mb-16 { margin-bottom: 16px; }
+.flex { display: flex; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+
+/* ------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------ */
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .form-row { flex-direction: column; gap: 0; }
+}
+
+@media (max-width: 640px) {
+  .app-shell { flex-direction: column; }
+  .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; }
+  .sidebar-brand { display: none; }
+  .nav-link { border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+  .nav-link.active { border-left-color: transparent; border-bottom-color: var(--color-accent); }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 16px; }
+}
+
+/* ------------------------------------------------------------
+   Print — used by view-bill.html and reports
+   ------------------------------------------------------------ */
+@media print {
+  .sidebar, .no-print, #toast-container { display: none !important; }
+  .app-shell { display: block; }
+  .main { padding: 0; max-width: 100%; }
+  body { background: #fff; }
+  .card { border: none; box-shadow: none; }
+}
