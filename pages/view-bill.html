@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>View Bill — Billing Software</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="../style.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .invoice-box {
@@ -95,8 +95,8 @@
           <div class="flex gap-8">
             <div class="logo-placeholder">Your<br/>Logo</div>
             <div>
-              <div class="business-name">Your Business Name</div>
-              <div class="text-muted" style="font-size:13px;">Address line · Phone · GSTIN (edit in code)</div>
+              <div class="business-name" id="business-name">Your Business Name</div>
+              <div class="text-muted" style="font-size:13px;" id="business-details">—</div>
             </div>
           </div>
           <div class="invoice-meta">
@@ -142,8 +142,8 @@
     </main>
   </div>
 
-  <script src="/config.js"></script>
-  <script src="/app.js"></script>
-  <script src="/view-bill.js"></script>
+  <script src="../config.js"></script>
+  <script src="../app.js"></script>
+  <script src="view-bill.js"></script>
 </body>
 </html>

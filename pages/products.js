@@ -8,7 +8,7 @@ const productsTbody = document.getElementById("products-tbody");
 const noProductsMsg = document.getElementById("no-products-msg");
 const loadingMsg = document.getElementById("loading-msg");
 const searchInput = document.getElementById("product-search");
-document.getElementById("add-product-btn").addEventListener("click", () => openModal(null));
+
 const modal = document.getElementById("product-modal");
 const modalTitle = document.getElementById("modal-title");
 const productIdField = document.getElementById("product-id-field");
@@ -202,22 +202,7 @@ async function deleteProduct(id, name) {
     showToast(friendlyErrorMessage(err), "error");
   }
 }
-function openModal(product) {
-  document.getElementById("name-field").classList.remove("has-error");
-  document.getElementById("price-field").classList.remove("has-error");
 
-  if (product) {
-    // editing an existing product — not this case
-  } else {
-    modalTitle.textContent = "Add Product";
-    productIdField.value = "";
-    nameField.value = "";
-    codeField.value = "";
-    priceField.value = "";
-    stockField.value = "0";
-  }
-  modal.classList.add("open");   // ← this line makes the popup visible
-}
 /* ------------------------------------------------------------
    Search + init
    ------------------------------------------------------------ */

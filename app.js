@@ -22,7 +22,7 @@ function renderSidebar() {
     { key: "bill-history", label: "Bill History", href: "/pages/bill-history.html" },
     { key: "products", label: "Products", href: "/pages/products.html" },
     { key: "customers", label: "Customers", href: "/pages/customers.html" },
-    { key: "reports", label: "Reports", href: "/pages/reports.html" },
+    { key: "reports", label: "Reports", href: "/pages/bill-history.html" },
     { key: "settings", label: "Settings", href: "/pages/settings.html" },
   ];
 
@@ -154,6 +154,10 @@ function friendlyErrorMessage(error) {
 
   if (error.code === "23505") {
     return "A record with this value already exists.";
+  }
+
+  if (error.code === "23503") {
+    return "This record is linked to existing bills and can't be deleted.";
   }
 
   if (error.message && error.message.includes("Failed to fetch")) {

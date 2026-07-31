@@ -27,6 +27,19 @@ async function loadBill() {
   }
 
   try {
+    // Business profile for the invoice header (falls back to defaults if not set yet)
+    const { data: settings } = await supabaseClient
+      .from("business_settings")
+      .select("business_name, address, phone, gstin")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (settings) {
+      document.getElementById("business-name").textContent = settings.business_name || "Your Business Name";
+      const detailParts = [settings.address, settings.phone, settings.gstin ? `GSTIN: ${settings.gstin}` : null].filter(Boolean);
+      document.getElementById("business-details").textContent = detailParts.join(" · ") || "—";
+    }
+
     const { data: bill, error: billError } = await supabaseClient
       .from("bills")
       .select(

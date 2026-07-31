@@ -12,7 +12,8 @@ In your Supabase project:
 - Open **SQL Editor → New Query**
 - Paste the entire contents of `sql/01_schema.sql` → click **Run**
 - Open a new query, paste the entire contents of `sql/02_create_bill_function.sql` → click **Run**
-- Go to **Table Editor** and confirm you see 4 tables: `customers`, `products`, `bills`, `bill_items`
+- Open a new query, paste the entire contents of `sql/03_business_settings.sql` → click **Run**
+- Go to **Table Editor** and confirm you see 5 tables: `customers`, `products`, `bills`, `bill_items`, `business_settings`
 
 ## 3. Get your API keys
 - Go to **Project Settings (gear icon) → API**
@@ -69,6 +70,9 @@ Open the browser console: press **F12** → **Console** tab, reproduce the issue
 - ✅ Atomic, safe bill saving (all-or-nothing)
 - ✅ Bill History with search + date range filter + sales report
 - ✅ Printable invoice and printable sales report
+- ✅ Products page (add/edit/delete, low-stock warning)
+- ✅ Customers page (view/edit/delete)
+- ✅ Settings page — business name, address, phone, GSTIN, shown on every printed invoice
 - ✅ Cloud storage via Supabase — same data on every device
 
 ## Not built yet (future features from your original spec)
