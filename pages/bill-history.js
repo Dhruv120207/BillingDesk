@@ -196,13 +196,19 @@ document.getElementById("reset-btn").addEventListener("click", () => {
   fromDateInput.value = "";
   toDateInput.value = "";
   fetchBills();
-  // Delegated click handler for Delete buttons (rows are re-rendered often,
+});
+
+// Delegated click handler for Delete buttons (rows are re-rendered often,
 // so we listen on the container instead of individual buttons)
 billsTbody.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-delete-id]");
   if (!btn) return;
   deleteBill(btn.dataset.deleteId, btn.dataset.billNo);
 });
+
+// Let pressing Enter in the search box trigger search too
+searchInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") fetchBills();
 });
 
 // Let pressing Enter in the search box trigger search too
