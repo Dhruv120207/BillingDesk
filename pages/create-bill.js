@@ -565,17 +565,15 @@ function recalculateAll() {
    ============================================================ */
 
 if (addRowBtn) {
-    addRowBtn.onclick = function () {
+addRowBtn.onclick = function () {
 
-        const row = addProductRow();
+    // Add 5 more rows
+    for (let i = 0; i < 5; i++) {
+        addProductRow();
+    }
 
-        toggleEmptyMessage();
-
-        const input = row.querySelector(".product-name-input");
-
-        if (input) input.focus();
-
-    };
+    recalculateAll();
+};
 }
 
 
@@ -697,32 +695,18 @@ if (
   /*
    * Create first product row
    */
-
-  const firstRow =
+  // Create 5 rows automatically
+for (let i = 0; i < 5; i++) {
     addProductRow();
+}
 
+recalculateAll();
 
-  /*
-   * Hide empty message
-   */
-
-  toggleEmptyMessage();
-
-
-  /*
-   * Focus product name
-   */
-
-  const firstInput =
-    firstRow.querySelector(
-      ".product-name-input"
-    );
-
-
-  if (firstInput) {
+// Focus first product
+const firstInput = document.querySelector(".product-name-input");
+if (firstInput) {
     firstInput.focus();
-  }
-
+}
 
   /*
    * Initial totals
