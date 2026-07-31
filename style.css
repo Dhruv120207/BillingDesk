@@ -373,3 +373,6 @@ th.money { text-align: right; }
   body { background: #fff; }
   .card { border: none; box-shadow: none; }
 }
+
+.btn-danger { background: #d9534f; color: #fff; }
+.btn-danger:hover { background: #c9302f; }

@@ -98,9 +98,11 @@ function renderBillsTable(bills) {
           <td class="money">${formatCurrency(bill.grand_total)}</td>
           <td>${bill.payment_method}</td>
           <td>
-            <a class="btn btn-secondary btn-sm" href="view-bill.html?id=${bill.id}">View</a>
-            <a class="btn btn-secondary btn-sm" href="view-bill.html?id=${bill.id}&print=1">Print</a>
-          </td>
+  <a class="btn btn-secondary btn-sm" href="view-bill.html?id=${bill.id}">View</a>
+  <a class="btn btn-secondary btn-sm" href="view-bill.html?id=${bill.id}&print=1">Print</a>
+  <a class="btn btn-secondary btn-sm" href="create-bill.html?edit=${bill.id}">Edit</a>
+  <button class="btn btn-danger btn-sm" data-delete-id="${bill.id}" data-bill-no="${bill.bill_no}">Delete</button>
+</td>
         </tr>
       `;
     })
@@ -194,6 +196,13 @@ document.getElementById("reset-btn").addEventListener("click", () => {
   fromDateInput.value = "";
   toDateInput.value = "";
   fetchBills();
+  // Delegated click handler for Delete buttons (rows are re-rendered often,
+// so we listen on the container instead of individual buttons)
+billsTbody.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-delete-id]");
+  if (!btn) return;
+  deleteBill(btn.dataset.deleteId, btn.dataset.billNo);
+});
 });
 
 // Let pressing Enter in the search box trigger search too
@@ -202,3 +211,34 @@ searchInput.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", fetchBills);
+
+/* ------------------------------------------------------------
+   Delete a bill (and its line items) after confirmation
+   ------------------------------------------------------------ */
+async function deleteBill(billId, billNo) {
+  const confirmed = confirm(`Delete bill #${billNo}? This cannot be undone.`);
+  if (!confirmed) return;
+
+  try {
+    // Remove line items first if they're a separate table
+    const { error: itemsError } = await supabaseClient
+      .from("bill_items")
+      .delete()
+      .eq("bill_id", billId);
+
+    if (itemsError) throw itemsError;
+
+    const { error: billError } = await supabaseClient
+      .from("bills")
+      .delete()
+      .eq("id", billId);
+
+    if (billError) throw billError;
+
+    showToast("Bill deleted successfully.", "success");
+    fetchBills(); // refresh the table
+  } catch (err) {
+    console.error(err);
+    showToast(friendlyErrorMessage(err), "error");
+  }
+}
