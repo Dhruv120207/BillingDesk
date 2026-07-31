@@ -12,10 +12,11 @@ let isSaving = false;
 console.log("create-bill.js loaded");
 console.log("Initialization");
 
-console.log(productRowsBody);
-console.log(addRowBtn);
 const productRowsBody = document.getElementById("product-rows");
 const addRowBtn = document.getElementById("add-row-btn");
+
+console.log("productRowsBody:", productRowsBody);
+console.log("addRowBtn:", addRowBtn);
 
 const mobileInput = document.getElementById("mobile-input");
 const nameInputTop = document.getElementById("name-input");
