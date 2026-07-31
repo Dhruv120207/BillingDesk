@@ -9,7 +9,11 @@ let isSaving = false;
 /* ============================================================
    GET ELEMENTS
    ============================================================ */
+console.log("create-bill.js loaded");
+console.log("Initialization");
 
+console.log(productRowsBody);
+console.log(addRowBtn);
 const productRowsBody = document.getElementById("product-rows");
 const addRowBtn = document.getElementById("add-row-btn");
 
@@ -18,6 +22,7 @@ const nameInputTop = document.getElementById("name-input");
 const customerStatus = document.getElementById("customer-status");
 
 const saveBillBtn = document.getElementById("save-bill-btn");
+
 
 
 /* ============================================================
@@ -558,26 +563,19 @@ function recalculateAll() {
    ADD PRODUCT BUTTON
    ============================================================ */
 
-addRowBtn.addEventListener(
-  "click",
-  function () {
+if (addRowBtn) {
+    addRowBtn.onclick = function () {
 
-    const row =
-      addProductRow();
+        const row = addProductRow();
 
+        toggleEmptyMessage();
 
-    const input =
-      row.querySelector(
-        ".product-name-input"
-      );
+        const input = row.querySelector(".product-name-input");
 
+        if (input) input.focus();
 
-    if (input) {
-      input.focus();
-    }
-
-  }
-);
+    };
+}
 
 
 /* ============================================================
