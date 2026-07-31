@@ -720,4 +720,11 @@ if (firstInput) {
     "Billing page elements not found. Check create-bill.html IDs."
   );
 
+  const saveBillBtn = document.getElementById("save-bill-btn");
+
+console.log("Save Button:", saveBillBtn);
+
+saveBillBtn.addEventListener("click", function () {
+    alert("Save button clicked");
+});
 }
