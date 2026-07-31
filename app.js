@@ -36,7 +36,7 @@ function renderSidebar() {
 
   root.innerHTML = `
     <aside class="sidebar">
-      <div class="sidebar-brand">Your<span>Business</span></div>
+      <div class="sidebar-brand">Isha<span>Designer</span></div>
       ${linksHtml}
     </aside>
   `;
